@@ -1105,6 +1105,38 @@
     .btn-fullwidth-action .en-copy { font-family: var(--font-en-curv) !important; font-weight: 400 !important; letter-spacing: .02em !important; font-size: 1.25rem; }
 
 
+    /* v23: Mobile Kakao floating control — compact icon only. Desktop unchanged. */
+    .kakao-widget-mobile-icon { display: none; }
+    @media (max-width: 700px) {
+      .kakao-floating-widget {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        gap: 0;
+        right: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        border-radius: 50%;
+        background: #FEE500;
+        border: 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.20);
+        justify-content: center;
+        align-items: center;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .kakao-floating-widget:hover { transform: none; }
+      .kakao-floating-widget:active { transform: scale(.95); }
+      .kakao-floating-widget .kakao-widget-avatar,
+      .kakao-floating-widget .kakao-widget-text { display: none; }
+      .kakao-widget-mobile-icon {
+        display: flex;
+        width: 26px;
+        height: 26px;
+        align-items: center;
+        justify-content: center;
+      }
+      .kakao-widget-mobile-icon svg { display: block; width: 26px; height: 26px; }
+    }
+
     /* v21: fixed mobile footer alignment and cover stability */
     @media (max-width: 700px) {
       .footer-inner { flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: .8rem; }
@@ -1452,7 +1484,10 @@
   
 
   <!-- 카카오톡 플로팅 팝업 -->
-  <a href="https://pf.kakao.com" target="_blank" class="kakao-floating-widget">
+  <a href="https://pf.kakao.com" target="_blank" class="kakao-floating-widget" aria-label="카카오톡 상담하기" rel="noopener noreferrer">
+    <span class="kakao-widget-mobile-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="#191919" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.8 6.7l-1.2 4.4c-.1.4.3.7.7.5l5.2-3.4c.2 0 .3 0 .5 0 5.5 0 10-3.6 10-8s-4.5-8-10-8z"/></svg>
+    </span>
     <div class="kakao-widget-avatar">
       <img src="./images/tazmo_wink_kakao.png" alt="윙크하는 타쯔모" />
     </div>
