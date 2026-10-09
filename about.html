@@ -364,8 +364,26 @@
       .story-main-headline { font-size: 2.4rem; }
       .header-search-bar input { width: 70px; }
     }
+
+    /* v21: ABOUT first fold shares NICE WORKS' full-bleed moving-image typography. */
+    .story-hero-video { position: relative; padding: 0; text-align: left; overflow: hidden; background: #21100f; height: min(820px, calc(100svh - var(--header-height))); min-height: 600px; display: flex; align-items: flex-end; border-bottom: 0; }
+    .story-hero-background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.88) contrast(1.04) brightness(.64); }
+    .story-hero-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.35), rgba(0,0,0,.05) 70%, rgba(0,0,0,.2)); pointer-events: none; }
+    .story-hero-copy { position: relative; z-index: 2; margin: 0 max(6vw, 56px) max(8vh, 72px); max-width: 880px; color: #fff; }
+    .story-hero-video .story-eyebrow { color: #FFD35B; font-size: clamp(1.2rem, 1.8vw, 1.55rem); margin-bottom: .7rem; }
+    .story-hero-video .story-main-headline { font-family: var(--font-en-special)!important; font-weight: 400; color: #fff; font-size: clamp(3.8rem, 6.8vw, 7rem); line-height: .94; margin: 0; max-width: none; text-shadow: 0 3px 18px rgba(0,0,0,.32); word-break: normal; }
+    .story-hero-video .story-sub-headline { color: rgba(255,255,255,.95); font-size: clamp(1rem, 1.4vw, 1.25rem); line-height: 1.65; font-weight: 800; margin-top: 1.3rem; }
+    @media (max-width: 980px) {
+      .story-hero-video { height: 76svh; min-height: 600px; }
+      .story-hero-copy { margin: 0 24px 72px; }
+    }
+    @media (max-width: 640px) {
+      .story-hero-video { min-height: min(600px, calc(100svh - var(--header-height))); height: calc(100svh - var(--header-height)); }
+      .story-hero-video .story-main-headline { font-size: clamp(2.8rem, 11.5vw, 4.9rem); line-height: .99; }
+      .story-hero-copy { margin: 0 22px 12svh; }
+    }
   </style>
-  <link rel="stylesheet" href="niceway-common-v17.css" />
+  <link rel="stylesheet" href="niceway-common-v21.css" />
 </head>
 <body>
 
@@ -446,10 +464,16 @@
   </header>
 
   <!-- 히어로 헤드라인 -->
-  <section class="story-hero-section">
-    <span class="story-eyebrow">BRAND PHILOSOPHY</span>
-    <h1 class="story-main-headline title-en make-it-mantra">GOOD ENOUGH NEVER MADE IT INTO THE BOTTLE.</h1>
-    <p class="story-sub-headline title-kr">적당한 건, 병에 담지 않습니다.</p>
+  <section class="story-hero-section story-hero-video" aria-label="NICE-WAY brand philosophy">
+    <video class="story-hero-background" autoplay muted loop playsinline preload="metadata" poster="https://images.pexels.com/videos/6602847/pexels-photo-6602847.jpeg?auto=compress&dpr=1&h=900&w=1400">
+      <source src="https://videos.pexels.com/video-files/6602847/6602847-uhd_3840_2160_25fps.mp4" type="video/mp4" />
+    </video>
+    <div class="story-hero-shade"></div>
+    <div class="story-hero-copy">
+      <span class="story-eyebrow">BRAND PHILOSOPHY</span>
+      <h1 class="story-main-headline title-en make-it-mantra">GOOD ENOUGH<br>NEVER MADE<br>IT INTO THE<br>BOTTLE.</h1>
+      <p class="story-sub-headline title-kr">적당한 건, 병에 담지 않습니다.</p>
+    </div>
   </section>
 
   <!-- 스토리 본문 -->

@@ -1104,8 +1104,18 @@
     .fullwidth-content-box h3, .home-sample-form h2 { font-family: var(--font-en-special) !important; }
     .btn-fullwidth-action .en-copy { font-family: var(--font-en-curv) !important; font-weight: 400 !important; letter-spacing: .02em !important; font-size: 1.25rem; }
 
+
+    /* v21: fixed mobile footer alignment and cover stability */
+    @media (max-width: 700px) {
+      .footer-inner { flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: .8rem; }
+      .footer-brand-logo { display: block; width: 160px; max-width: 60vw; margin: 0 auto; }
+      footer { text-align: center; padding-bottom: 7rem; }
+      .footer-inner p { text-align: center; max-width: 95%; overflow-wrap: anywhere; }
+      .fullwidth-hero-banner .fullwidth-bg-photo { inset: -8%; }
+      .product-marquee-viewport, .recipe-marquee-viewport { touch-action: pan-y; }
+    }
   </style>
-  <link rel="stylesheet" href="niceway-common-v17.css" />
+  <link rel="stylesheet" href="niceway-common-v21.css" />
 </head>
 <body>
 
@@ -1646,6 +1656,11 @@
       let targetSpeed = config.autoSpeed;
       let loopWidth = 1;
       let isMouseInside = false;
+      let isTouchDragging = false;
+      let touchPointerId = null;
+      let touchLastX = 0;
+      let touchTravel = 0;
+      let suppressTouchClick = false;
       let rafId = null;
       const isFinePointer = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
 
@@ -1693,7 +1708,45 @@
         });
       }
 
+      // Allow finger dragging on both infinite tracks without hijacking vertical page scrolling.
+      viewport.style.touchAction = 'pan-y';
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'touch' || !event.isPrimary) return;
+        touchPointerId = event.pointerId;
+        isTouchDragging = true;
+        touchLastX = event.clientX;
+        touchTravel = 0;
+        currentSpeed = 0;
+        targetSpeed = 0;
+      });
+      viewport.addEventListener('pointermove', (event) => {
+        if (!isTouchDragging || event.pointerId !== touchPointerId) return;
+        const dx = event.clientX - touchLastX;
+        touchLastX = event.clientX;
+        touchTravel += Math.abs(dx);
+        if (touchTravel > 7) suppressTouchClick = true;
+        offset += dx;
+        while (offset <= -loopWidth) offset += loopWidth;
+        while (offset > 0) offset -= loopWidth;
+        track.style.transform = `translate3d(${offset}px, 0, 0)`;
+      }, { passive: true });
+      function endTouchDrag(event) {
+        if (!isTouchDragging || event.pointerId !== touchPointerId) return;
+        isTouchDragging = false;
+        touchPointerId = null;
+        currentSpeed = config.autoSpeed;
+        targetSpeed = config.autoSpeed;
+        if (suppressTouchClick) setTimeout(() => { suppressTouchClick = false; }, 300);
+      }
+      viewport.addEventListener('pointerup', endTouchDrag);
+      viewport.addEventListener('pointercancel', endTouchDrag);
+      // A swipe must not accidentally open the product or recipe under the finger.
+      viewport.addEventListener('click', (event) => {
+        if (suppressTouchClick) { event.preventDefault(); event.stopPropagation(); suppressTouchClick = false; }
+      }, true);
+
       function tick() {
+        if (isTouchDragging) { rafId = requestAnimationFrame(tick); return; }
         // 현재 속도가 목표 속도를 천천히 따라가도록 해서 관성감 생성
         currentSpeed += (targetSpeed - currentSpeed) * config.easing;
         if (Math.abs(currentSpeed) < 0.002 && targetSpeed === 0) currentSpeed = 0;
@@ -1795,14 +1848,23 @@
       }
     }
 
-    // 풀와이드 배경 패럴랙스
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      const bg1 = document.getElementById('parallaxBg1');
-      const bg2 = document.getElementById('parallaxBg2');
-      if (bg1) bg1.style.transform = `translateY(${(scrollY - 900) * 0.12}px) scale(1.1)`;
-      if (bg2) bg2.style.transform = `translateY(${(scrollY - 2000) * 0.12}px) scale(1.1)`;
-    });
+    // Keep image movement relative to each banner and within its bleed region.
+    // On mobile, static cover avoids revealing the page behind the moving background.
+    function updateBannerParallax() {
+      const mobile = window.matchMedia('(max-width: 700px)').matches;
+      ['parallaxBg1', 'parallaxBg2'].forEach(id => {
+        const bg = document.getElementById(id);
+        if (!bg) return;
+        const rect = bg.parentElement.getBoundingClientRect();
+        const relative = (window.innerHeight / 2) - (rect.top + rect.height / 2);
+        const maxShift = Math.min(55, rect.height * .075);
+        const shift = mobile ? 0 : Math.max(-maxShift, Math.min(maxShift, relative * .10));
+        bg.style.transform = `translate3d(0, ${shift}px, 0) scale(1.1)`;
+      });
+    }
+    window.addEventListener('scroll', updateBannerParallax, { passive: true });
+    window.addEventListener('resize', updateBannerParallax);
+    updateBannerParallax();
 
     // =========================================================================
     // [5] 모션 1 인터랙션 엔진

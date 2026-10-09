@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko-KR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NICE-WAY | 소스 상세 정보</title>
+
+
+  <style>
+    :root {
+      --heinz-red: #A6192E;
+      --heinz-dark-red: #7A0F1F;
+      --naver-green: #03C75A;
+      --accent-yellow: #F6B828;
+      --cream-bg: #FAF4E8;
+      --card-cream: #FAF7F2;
+      --text-dark: #1A1A1A;
+      --border-light: #EAE5DC;
+      --header-height: 72px;
+
+      --font-kr: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-en-curv: 'Mouse Memoirs', sans-serif;
+      --font-en-special: 'Luckiest Guy', cursive;
+      --font-body: 'Mouse Memoirs', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    @font-face {
+      font-family: 'Curvilingus';
+      src: local('Curvilingus'), local('Caprasimo');
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--cream-bg);
+      font-family: var(--font-body);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      line-height: 1.5;
+      letter-spacing: -0.025em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .title-en { font-family: var(--font-en-curv); letter-spacing: 0.02em; }
+    .title-kr { font-family: var(--font-kr); font-weight: 900; letter-spacing: -0.035em; }
+    .en-body { font-family: var(--font-en-curv); letter-spacing: .015em; }
+    .section-title-en {
+      font-family: var(--font-en-special);
+      font-size: clamp(2.35rem, 4vw, 3.55rem);
+      line-height: 1;
+      color: var(--heinz-red);
+      letter-spacing: .01em;
+      font-weight: 400;
+    }
+
+
+    .line-icon {
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* 통일된 헤더 */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--header-height);
+      background-color: var(--heinz-red);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .header-left, .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .circle-icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+    .circle-icon-btn:hover { background-color: rgba(255, 255, 255, 0.35); }
+
+    .header-logo-anchor {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    .header-logo-img { height: 42px; width: auto; object-fit: contain; }
+
+    .header-search-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      padding: 6px 14px;
+      gap: 8px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .header-search-bar input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #FFFFFF;
+      font-size: 0.92rem;
+      width: 130px;
+      cursor: pointer;
+    }
+    .header-search-bar input::placeholder { color: rgba(255, 255, 255, 0.8); }
+
+    /* 1/4 원형 드로어 */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 1800;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      backdrop-filter: blur(5px);
+    }
+    .drawer-backdrop.active { opacity: 1; pointer-events: auto; }
+
+    .quarter-drawer-left {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: clamp(440px, 54vw, 700px);
+      height: clamp(420px, 58vh, 600px);
+      background: #FFFFFF;
+      color: var(--text-dark);
+      z-index: 2000;
+      border-radius: 0 0 100% 0;
+      padding: 3rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      transform-origin: top left;
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 1.05s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .quarter-drawer-left.active { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+    .quarter-drawer-right {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: clamp(480px, 58vw, 750px);
+      height: clamp(450px, 60vh, 640px);
+      background: var(--cream-bg);
+      color: var(--heinz-red);
+      z-index: 2000;
+      border-radius: 0 0 0 100%;
+      padding: 3rem 4rem 3rem 5.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      transform-origin: top right;
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 1.05s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .quarter-drawer-right.active { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+    .drawer-close-btn { background: none; border: none; font-size: 2.2rem; cursor: pointer; color: inherit; transition: transform 0.25s; }
+    .drawer-close-btn:hover { transform: rotate(90deg); }
+
+    .menu-link-list { list-style: none; margin-top: 0.8rem; display: flex; flex-direction: column; align-items: flex-end; gap: 1.1rem; text-align: right; }
+    .menu-link-list a { font-family: var(--font-en-curv); font-size: 1.95rem; line-height: 1.1; color: var(--heinz-red); text-decoration: none; transition: color 0.2s, transform 0.2s; display: inline-block; white-space: nowrap; }
+    .menu-link-list a:hover { color: var(--accent-yellow); transform: translateX(-8px); }
+
+    /* 제품 상세 레이아웃 */
+    .detail-container { margin-top: var(--header-height); padding: 3.5rem 1.5rem 6rem; }
+    .detail-inner { max-width: 1240px; margin: 0 auto; }
+    .breadcrumb-row { display:flex; align-items:baseline; gap:.55rem; margin-bottom:2.5rem; }
+    .breadcrumb-row a { font-family:var(--font-en-curv); font-size:1.35rem; line-height:1; color:var(--heinz-red); text-decoration:none; font-weight:400; letter-spacing:.01em; }
+    .breadcrumb-slash { font-family:var(--font-en-curv); font-size:1.05rem; color:#B8AA98; }
+    .breadcrumb-product-kr { font-family:var(--font-kr); font-size:.92rem; font-weight:650; color:#7A7166; letter-spacing:-.02em; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.08fr;
+      gap: 4.5rem;
+      align-items: flex-start;
+      margin-bottom: 5.5rem;
+    }
+    .detail-bottle-stage { text-align: center; position: sticky; top: 110px; display: flex; justify-content: center; }
+    .floating-bottle-img {
+      max-height: 480px;
+      max-width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 20px 22px rgba(0, 0, 0, 0.18));
+      animation: bottleFloat 3.4s ease-in-out infinite alternate;
+    }
+    @keyframes bottleFloat { 0% { transform: translateY(0); } 100% { transform: translateY(-14px); } }
+
+    .brand-eyebrow { font-family:var(--font-en-curv); font-size:1.35rem; color:var(--heinz-dark-red); font-weight:400; letter-spacing:.02em; margin-bottom:.55rem; display:block; }
+    .product-title-en { font-family:var(--font-en-special); font-size:clamp(3.05rem,5vw,4.45rem); color:var(--heinz-red); line-height:.95; letter-spacing:.01em; font-weight:400; margin-bottom:.55rem; text-transform:uppercase; }
+    .product-title-kr { font-family:var(--font-kr); font-size:1.28rem; color:#352D27; line-height:1.35; font-weight:800; letter-spacing:-.035em; margin-bottom:1.8rem; }
+    .detail-size-label { font-family:var(--font-en-curv); font-size:1.2rem; font-weight:400; letter-spacing:.03em; margin-bottom:.65rem; color:#766A5D; text-transform:uppercase; }
+    .size-chips-wrap { display:flex; gap:8px; margin-bottom:1.8rem; }
+    .size-chip { font-family:var(--font-en-curv); padding:9px 20px; border-radius:999px; border:1.5px solid var(--heinz-red); background:#FFFFFF; color:var(--heinz-red); font-weight:400; font-size:1.38rem; line-height:1; letter-spacing:.01em; }
+
+    .btn-smartstore-naver {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--naver-green);
+      color: #FFFFFF;
+      font-size: 0.96rem;
+      font-weight: 800;
+      padding: 0.8rem 2rem;
+      border-radius: 999px;
+      text-decoration: none;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 14px rgba(3, 199, 90, 0.35);
+      transition: transform 0.2s;
+    }
+    .btn-smartstore-naver:hover { transform: translateY(-2px); }
+
+    /* ===================================================
+       NICE-WAY FLAVOR MAP — English first / Korean second
+    =================================================== */
+    .radar-spectrum-card {
+      background: rgba(255,255,255,.34);
+      border: 1.5px solid rgba(166,25,46,.16);
+      border-radius: 28px;
+      padding: 2.15rem 2.25rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: none;
+    }
+    .radar-header { margin-bottom:.45rem; }
+    .radar-title-en {
+      font-family:var(--font-en-special);
+      font-size:2.1rem;
+      line-height:1;
+      font-weight:400;
+      letter-spacing:.015em;
+      color:var(--heinz-red);
+      margin-bottom:.35rem;
+    }
+    .radar-title-kr {
+      font-family:var(--font-kr);
+      font-size:.92rem;
+      font-weight:750;
+      letter-spacing:-.025em;
+      color:#6B5E52;
+    }
+    .radar-quote {
+      font-family:var(--font-kr);
+      font-size:1rem;
+      line-height:1.55;
+      font-weight:700;
+      color:var(--heinz-dark-red);
+      margin:1rem 0 1rem;
+      letter-spacing:-.025em;
+    }
+    .radar-chart-container { display:flex; justify-content:center; align-items:center; padding:.25rem 0 .5rem; }
+    .radar-svg { width:min(100%, 330px); height:auto; overflow:visible; }
+    .radar-grid-main { fill:none; stroke:#DCCDC0; stroke-width:1.2; }
+    .radar-grid-sub { fill:none; stroke:#EDE3D9; stroke-width:1; }
+    .radar-axis-line { stroke:#E5D8CC; stroke-width:1; }
+    .radar-polygon {
+      fill:rgba(166,25,46,.13);
+      stroke:var(--heinz-red);
+      stroke-width:2.6;
+      stroke-linejoin:round;
+      transform-origin:140px 140px;
+    }
+    .radar-axis-en {
+      font-family:var(--font-en-curv);
+      font-size:16px;
+      font-weight:400;
+      letter-spacing:.5px;
+      fill:var(--heinz-dark-red);
+      text-anchor:middle;
+    }
+    .radar-axis-kr {
+      font-family:var(--font-kr);
+      font-size:9px;
+      font-weight:650;
+      fill:#8C8177;
+      text-anchor:middle;
+      letter-spacing:-.2px;
+    }
+    .compact-chef-tip { background:transparent; border-top:1px solid rgba(166,25,46,.14); border-right:0; border-bottom:0; border-left:0; padding:1rem 0 0; border-radius:0; margin-top:.65rem; }
+    .compact-chef-tip p { font-family:var(--font-kr); font-size:.92rem; color:#62574D; line-height:1.6; letter-spacing:-.02em; }
+
+    /* ===================================================
+       [자동 무한 롤링 + 양끝 화살표 배치 캐러셀 섹션]
+    =================================================== */
+    .carousel-section-wrap {
+      border-top: 2px solid var(--border-light);
+      padding-top: 4rem;
+      margin-bottom: 4.5rem;
+      position: relative;
+    }
+    .carousel-header-bar {
+      margin-bottom: 1.8rem;
+      text-align: center;
+    }
+    .carousel-header-bar h2 { font-size: 2.3rem; color: var(--heinz-red); }
+
+    /* 양끝에 플로팅 배치되는 < > 화살표 버튼 */
+    .carousel-outer-wrapper {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+    }
+    .carousel-edge-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 2px solid #D5CEBF;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .carousel-edge-btn:hover {
+      background: var(--heinz-red);
+      color: #FFF;
+      border-color: var(--heinz-red);
+      transform: translateY(-50%) scale(1.1);
+    }
+    .carousel-edge-btn.btn-prev { left: -10px; }
+    .carousel-edge-btn.btn-next { right: -10px; }
+
+    .marquee-viewport-box {
+      width: 100%;
+      overflow: hidden;
+      padding: 1rem 0 2rem;
+    }
+    .marquee-infinite-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      animation: detailAutoScroll 34s linear infinite;
+    }
+    .marquee-viewport-box:hover .marquee-infinite-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes detailAutoScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .product-carousel-card {
+      width: 250px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 1.8rem 1.4rem;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 380px;
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    .product-carousel-card:hover { transform: translateY(-6px); }
+    .product-carousel-card img { max-height: 200px; max-width: 100%; object-fit: contain; margin: 0 auto; }
+
+    .card-brand-en { display:block; color:#777; font-family:var(--font-en-curv); font-size:1.05rem; font-weight:400; letter-spacing:.01em; margin-bottom:.15rem; }
+
+    .recipe-carousel-card {
+      width: 320px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid var(--border-light);
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    .recipe-carousel-card:hover { transform: translateY(-6px); }
+    .recipe-card-photo { height: 210px; width: 100%; object-fit: cover; }
+    .recipe-card-info { padding: 1.4rem; text-align: center; }
+
+    footer { background: #111; color: #888; padding: 3.5rem 2rem; text-align: center; font-size: 0.88rem; }
+
+    @media (max-width: 860px) {
+      .product-title-en{font-size:clamp(2.7rem,12vw,3.8rem);}
+      .product-title-kr{font-size:1.12rem;}
+      .breadcrumb-row{margin-bottom:1.8rem; flex-wrap:wrap;}
+      .detail-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .detail-bottle-stage { position: static; }
+      .floating-bottle-img { max-height: 360px; }
+      .carousel-edge-btn { display: none; }
+      .header-search-bar input { width: 70px; }
+    }
+  </style>
+  <link rel="stylesheet" href="niceway-common-v21.css" />
+</head>
+<body>
+
+  <div class="drawer-backdrop" id="backdrop" onclick="closeAllDrawers()"></div>
+
+  <!-- 좌측 1/4 원형 브랜드 드로어 -->
+  <div class="quarter-drawer-left" id="drawerLeft">
+    <button class="drawer-close-btn" onclick="closeAllDrawers()">✕</button>
+    <h3 class="title-en" style="font-size: 2.2rem; color: var(--heinz-red); margin-bottom: 1.5rem;">Nice-Way Brands</h3>
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+      <a href="index.html" style="text-align: center; text-decoration: none; color: inherit;">
+        <div style="width: 95px; height: 95px; border-radius: 50%; background: var(--heinz-red); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.8rem; padding: 10px;">
+          <img src="./images/niceway_character_logo.png" alt="Nice-Way" style="width: 100%; height: 100%; object-fit: contain;" />
+        </div>
+        <strong style="font-size: 1.05rem; color: var(--heinz-dark-red);">NICEWAY SAUCE</strong>
+      </a>
+    </div>
+  </div>
+
+  <!-- 우측 1/4 원형 메뉴 드로어 -->
+  <div class="quarter-drawer-right" id="drawerRight">
+    <button class="drawer-close-btn" onclick="closeAllDrawers()">✕</button>
+    <div style="font-size: 2.3rem; color: var(--heinz-red); margin-bottom: 0.5rem;" class="title-en">NICE-WAY</div>
+    <ul class="menu-link-list">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="about.html">ABOUT</a></li>
+      <li><a href="products.html">PRODUCT</a></li>
+      <li><a href="nice-works.html">NICE WORKS</a></li>
+      <li><a href="index.html#recipes-carousel-anchor">RECIPES</a></li>
+      <li><a href="index.html#samples-anchor">GET SAMPLES</a></li>
+    </ul>
+  </div>
+
+  <!-- 헤더 -->
+  <header>
+    <div class="header-left">
+      <button class="circle-icon-btn" onclick="openLeftDrawer()" aria-label="브랜드 메뉴">
+        <svg class="line-icon" width="22" height="22" viewBox="0 0 24 24">
+          <circle cx="5" cy="5" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="19" cy="5" r="1.5"></circle>
+          <circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle>
+          <circle cx="5" cy="19" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle><circle cx="19" cy="19" r="1.5"></circle>
+        </svg>
+      </button>
+    </div>
+
+    <!-- 중앙 로고: main_typo.png -->
+    <a href="index.html" class="header-logo-anchor">
+      <img src="./images/niceway_logo_full.png" alt="NICE-WAY" class="header-logo-img" />
+    </a>
+
+    <div class="header-right">
+      <button class="circle-icon-btn" onclick="openRightDrawer()" aria-label="메뉴 열기">
+        <svg class="line-icon" width="22" height="22" viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="detail-container">
+    <div class="detail-inner">
+      <div class="breadcrumb-row">
+        <a href="products.html">All Products</a>
+        <span class="breadcrumb-slash">/</span>
+        <span class="breadcrumb-product-kr" id="detailBreadcrumbName">하바네로 토마토 케찹</span>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-bottle-stage">
+          <img id="detailBottleImg" src="" alt="Product Bottle" class="floating-bottle-img" />
+        </div>
+
+        <div class="detail-info-col">
+          <span class="brand-eyebrow">NICE-WAY CRAFT</span>
+          <h1 class="product-title-en" id="detailTitleEn">HABANERO TOMATO KETCHUP</h1>
+          <div class="product-title-kr" id="detailTitleKr">하바네로 토마토 케찹</div>
+
+          <div class="detail-size-label">AVAILABLE SIZE</div>
+          <div class="size-chips-wrap">
+            <div class="size-chip" id="detailSizeChip">397g · 14 oz</div>
+          </div>
+
+          <a href="https://smartstore.naver.com" target="_blank" class="btn-smartstore-naver">
+            <span>네이버 스마트스토어로 구매하기</span>
+            <svg class="line-icon" width="14" height="14" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+          </a>
+
+          <!-- NICE-WAY FLAVOR MAP -->
+          <div class="radar-spectrum-card">
+            <div class="radar-header">
+              <h4 class="radar-title-en">FLAVOR MAP</h4>
+              <div class="radar-title-kr">맛의 설계도</div>
+            </div>
+            <div class="radar-quote" id="detailSpecQuote"></div>
+
+            <div class="radar-chart-container">
+              <svg class="radar-svg" viewBox="0 0 280 280" aria-label="Flavor map">
+                <polygon class="radar-grid-main" points="140,50 218,95 218,185 140,230 62,185 62,95"></polygon>
+                <polygon class="radar-grid-sub" points="140,80 192,110 192,170 140,200 88,170 88,110"></polygon>
+                <polygon class="radar-grid-sub" points="140,110 166,125 166,155 140,170 114,155 114,125"></polygon>
+
+                <line class="radar-axis-line" x1="140" y1="140" x2="140" y2="50"></line>
+                <line class="radar-axis-line" x1="140" y1="140" x2="218" y2="95"></line>
+                <line class="radar-axis-line" x1="140" y1="140" x2="218" y2="185"></line>
+                <line class="radar-axis-line" x1="140" y1="140" x2="140" y2="230"></line>
+                <line class="radar-axis-line" x1="140" y1="140" x2="62" y2="185"></line>
+                <line class="radar-axis-line" x1="140" y1="140" x2="62" y2="95"></line>
+
+                <polygon id="radarPolygon" class="radar-polygon" points=""></polygon>
+
+                <text x="140" y="28"><tspan x="140" class="radar-axis-en">SPICY</tspan><tspan x="140" dy="13" class="radar-axis-kr">매운맛</tspan></text>
+                <text x="242" y="80"><tspan x="242" class="radar-axis-en">SWEET</tspan><tspan x="242" dy="13" class="radar-axis-kr">단맛</tspan></text>
+                <text x="242" y="190"><tspan x="242" class="radar-axis-en">TANGY</tspan><tspan x="242" dy="13" class="radar-axis-kr">산미</tspan></text>
+                <text x="140" y="248"><tspan x="140" class="radar-axis-en">BODY</tspan><tspan x="140" dy="13" class="radar-axis-kr">바디감</tspan></text>
+                <text x="38" y="190"><tspan x="38" class="radar-axis-en">UMAMI</tspan><tspan x="38" dy="13" class="radar-axis-kr">감칠맛</tspan></text>
+                <text x="38" y="80"><tspan x="38" class="radar-axis-en">SMOKY</tspan><tspan x="38" dy="13" class="radar-axis-kr">스모키</tspan></text>
+              </svg>
+            </div>
+
+            <div class="compact-chef-tip">
+              <p id="detailChefSecret"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- [양끝 화살표 + 10종 무한 롤링] Other Products You May Like -->
+      <section class="carousel-section-wrap">
+        <div class="carousel-header-bar">
+          <h2 class="section-title-en">Other Products You May Like</h2>
+        </div>
+        <div class="carousel-outer-wrapper">
+          <button class="carousel-edge-btn btn-prev" onclick="scrollManual('prodTrack', -300)">‹</button>
+          <div class="marquee-viewport-box">
+            <div class="marquee-infinite-track" id="prodTrack"></div>
+          </div>
+          <button class="carousel-edge-btn btn-next" onclick="scrollManual('prodTrack', 300)">›</button>
+        </div>
+      </section>
+
+      <!-- [양끝 화살표 + 10종 무한 롤링] Cook With Us -->
+      <section class="carousel-section-wrap" style="margin-bottom: 0;">
+        <div class="carousel-header-bar">
+          <h2 class="section-title-en">Cook With Us</h2>
+        </div>
+        <div class="carousel-outer-wrapper">
+          <button class="carousel-edge-btn btn-prev" onclick="scrollManual('recTrack', -340)">‹</button>
+          <div class="marquee-viewport-box">
+            <div class="marquee-infinite-track" id="recTrack"></div>
+          </div>
+          <button class="carousel-edge-btn btn-next" onclick="scrollManual('recTrack', 340)">›</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 NICE-WAY Craft Sauces. Make it Fast Make it Nice. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function openLeftDrawer() {
+      document.getElementById('drawerLeft').classList.add('active');
+      document.getElementById('backdrop').classList.add('active');
+    }
+    function openRightDrawer() {
+      document.getElementById('drawerRight').classList.add('active');
+      document.getElementById('backdrop').classList.add('active');
+    }
+    function closeAllDrawers() {
+      document.getElementById('drawerLeft').classList.remove('active');
+      document.getElementById('drawerRight').classList.remove('active');
+      document.getElementById('backdrop').classList.remove('active');
+    }
+
+    // 10종 제품 DB
+    const productDB = {
+      habanero: { id: "habanero", enTitle: "Habanero Tomato Ketchup", title: "하바네로 토마토 케찹", size: "397g (14 oz)", image: "./images/marketing-view-color-front_f80d2597d9a9892da37a544c76309e02457b6614_3b0764081030cd9a35b605b96603b8c9.png", quote: "\"화끈한 하바네로의 불향과 토마토의 깊은 감칠맛\"", scores: [0.95, 0.55, 0.80, 0.90, 0.85, 0.70], secret: "에어프라이어 치킨이나 패티 위에 발라 마이야르 글레이징을 입혀보세요." },
+      mustard: { id: "mustard", enTitle: "Chipotle Honey Mustard", title: "치폴레 허니 머스타드", size: "396g (14 oz)", image: "./images/marketing-view-color-front_content-hub-11641304_0fc95c522a543b6d557dbe78be25babf.png", quote: "\"스모키 치폴레와 달콤한 꿀의 완벽한 밸런스\"", scores: [0.75, 0.85, 0.70, 0.80, 0.80, 0.95], secret: "모닝빵 사이에 햄치즈와 듬뿍 바르면 전문 델리 샌드위치 완성!" },
+      relish: { id: "relish", enTitle: "Crunchy Dill Relish", title: "크런치 딜 렐리쉬", size: "375ml (12.7 fl oz)", image: "./images/marketing-view-color-front_afb8a1cadf6001fbaf0d2926cc3265664b22d2b2_614616a42c2426dccc0cd0962fdb4519 (1).png", quote: "\"아삭아삭 씹히는 딜 허브 피클의 경쾌한 리프레시\"", scores: [0.20, 0.50, 0.95, 0.75, 0.65, 0.15], secret: "마요네즈와 1:1로 섞어 즉석 수제 타르타르 소스를 만들어보세요." },
+      gravy: { id: "gravy", enTitle: "Homestyle Brown Gravy", title: "홈스타일 브라운 그레이비", size: "340g (12 oz)", image: "./images/marketing-view-color-front_content-hub-7783424_226d284a297b3ff455354be80a5dd560.png", quote: "\"진한 비프 스톡으로 완성한 레스토랑의 깊은 바디감\"", scores: [0.15, 0.25, 0.30, 0.95, 0.95, 0.60], secret: "감자튀김 위에 치즈를 얹고 뜨거운 그레이비를 부어 푸틴을 완성하세요." },
+      vinegar: { id: "vinegar", enTitle: "Apple Cider Vinegar", title: "애플 사이다 식초", size: "473ml (16 fl oz)", image: "./images/marketing-view-color-front_5dcf9610ea27b54293a123131a5da66e7cc3415a_4c0eb8bd571a0ef5b42552ae65e3fa26.png", quote: "\"사과의 싱그러움이 살아있는 천연 발효 비네거\"", scores: [0.10, 0.70, 0.95, 0.20, 0.40, 0.10], secret: "올리브 오일과 1:2로 섞어 상큼한 프렌치 드레싱을 만들어보세요." },
+      bbq: { id: "bbq", enTitle: "Classic Smoky BBQ", title: "클래식 스모키 BBQ", size: "500g (17.5 oz)", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=400&q=80", quote: "\"패티의 육즙과 반응하는 진한 참나무 훈연향\"", scores: [0.65, 0.85, 0.60, 0.90, 0.85, 0.98], secret: "그릴에 굽기 마지막 1분 전 표면에 덧발라 윤기 나는 글레이징을 완성하세요." },
+      mayo: { id: "mayo", enTitle: "Real Garlic Aioli Mayo", title: "리얼 갈릭 아이올리 마요", size: "295ml (10 fl oz)", image: "https://res.cloudinary.com/kraft-heinz-whats-cooking-ca/image/upload/f_auto/q_auto/c_limit,w_640/v1/mayo_j2cj1s", quote: "\"구운 마늘의 크리미한 풍미가 가득한 맛\"", scores: [0.20, 0.35, 0.45, 0.95, 0.90, 0.40], secret: "감자튀김이나 피자 도우 크러스트를 찍어 먹으면 환상적입니다." }
+    };
+
+    // 10종 레시피 리스트
+    const recipeList = [
+      { id: "shrimp", title: "갈릭 레몬 쉬림프 꼬치구이", time: "15 MIN", img: "https://images.unsplash.com/photo-1559742811-822873691df8?auto=format&fit=crop&w=600&q=80" },
+      { id: "chicken", title: "남은 치킨 핫 브리오슈 버거", time: "7 MIN", img: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=600&q=80" },
+      { id: "fries", title: "더티 치즈 로디드 프라이", time: "5 MIN", img: "https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=600&q=80" },
+      { id: "tacos", title: "하와이안 BBQ 치킨 타코", time: "12 MIN", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80" },
+      { id: "gnocchi", title: "치킨 팟파이 크림 뇨끼", time: "20 MIN", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=600&q=80" }
+    ];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentId = urlParams.get('id') || 'habanero';
+    const prod = productDB[currentId] || productDB.habanero;
+
+    document.getElementById('detailTitleEn').textContent = prod.enTitle || prod.title;
+    document.getElementById('detailTitleKr').textContent = prod.title;
+    document.getElementById('detailBreadcrumbName').textContent = prod.title;
+    document.getElementById('detailBottleImg').src = prod.image;
+    document.getElementById('detailSizeChip').textContent = prod.size.replace(' (', ' · ').replace(')', '');
+    document.getElementById('detailSpecQuote').textContent = prod.quote;
+    document.getElementById('detailChefSecret').textContent = prod.secret;
+
+    // 세련된 육각형 레이더 좌표 계산 (280x280 뷰박스 기준)
+    const cx = 140, cy = 140, maxRadius = 90;
+    const angles = [-90, -30, 30, 90, 150, 210].map(a => a * Math.PI / 180);
+    const points = prod.scores.map((score, i) => {
+      const r = score * maxRadius;
+      const x = cx + r * Math.cos(angles[i]);
+      const y = cy + r * Math.sin(angles[i]);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+
+    document.getElementById('radarPolygon').setAttribute('points', points);
+
+    // Other Products 무한 롤링 트랙
+    const pTrack = document.getElementById('prodTrack');
+    const prodArray = Object.keys(productDB).map(k => productDB[k]);
+    const doubleProd = [...prodArray, ...prodArray];
+
+    doubleProd.forEach(item => {
+      const card = document.createElement('a');
+      card.href = `product-detail.html?id=${item.id}`;
+      card.className = 'product-carousel-card';
+      card.innerHTML = `
+        <img src="${item.image}" alt="${item.title}" />
+        <div>
+          <small class="card-brand-en">NICE-WAY CRAFT</small>
+          <h4 style="font-family:var(--font-en-curv); color:var(--heinz-red); font-size:1.32rem; font-weight:400; line-height:1; margin:5px 0 5px;">${item.enTitle || item.title}</h4>
+          <div class="title-kr" style="color:#3E3630; font-size:.82rem; font-weight:700; margin-bottom:5px;">${item.title}</div>
+          <span style="font-family:var(--font-en-curv); font-size:1rem; color:#777;">${item.size}</span>
+        </div>
+      `;
+      pTrack.appendChild(card);
+    });
+
+    // Cook With Us 무한 롤링 트랙
+    const rTrack = document.getElementById('recTrack');
+    const doubleRec = [...recipeList, ...recipeList];
+
+    doubleRec.forEach(r => {
+      const rCard = document.createElement('a');
+      rCard.href = `recipe-detail.html?id=${r.id}`;
+      rCard.className = 'recipe-carousel-card';
+      rCard.innerHTML = `
+        <img src="${r.img}" alt="${r.title}" class="recipe-card-photo" />
+        <div class="recipe-card-info">
+          <h4 class="title-kr" style="color: var(--heinz-red); font-size: 1.15rem; margin-bottom: 0.3rem;">${r.title}</h4>
+          <div style="font-size: 0.85rem; color: #777;">Nice-Way Kitchen • ${r.time}</div>
+        </div>
+      `;
+      rTrack.appendChild(rCard);
+    });
+
+    function scrollManual(trackId, amount) {
+      document.getElementById(trackId).parentElement.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+  </script>
+  <script src="niceway-common-v17.js"></script>
+</body>
+</html>
