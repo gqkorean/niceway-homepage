@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NICE-WAY Brand Motion</title>
+  
+  <!-- 클래식 폰트 로드 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Mouse+Memoirs&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    @font-face {
+      font-family: var(--font-en-curv);
+      src: local('Curvilingus'), local('Curvilingus-Regular');
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background-color: #A6192E; /* 하인즈 레드 */
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: var(--font-en-curv);
+      position: relative;
+    }
+
+    /* 1. 메인 슬롯 컴포넌트 */
+    .main-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      transform-origin: center center;
+      will-change: transform, opacity;
+      z-index: 10;
+    }
+
+    /* 상단: MAKE IT FAST */
+    .text-fast {
+      font-family: var(--font-en-special);
+      font-size: clamp(2.2rem, 5.2vw, 5.0rem);
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      margin-bottom: 0.2vh;
+      text-shadow: none;
+      will-change: transform;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* 중간: MAKE IT NICE */
+    .text-nice {
+      font-family: var(--font-en-special);
+      font-size: clamp(2.2rem, 5.2vw, 5.0rem);
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      margin-bottom: 1vh;
+      text-shadow: none;
+      will-change: transform;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* 하단: 나이스웨이 로고 드롭 컨테이너 */
+    .logo-container {
+      position: relative;
+      width: clamp(310px, 38vw, 530px);
+      aspect-ratio: 1 / 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      will-change: transform;
+    }
+
+    /* 둥실둥실 플로팅 전용 내부 래퍼 */
+    .logo-float-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      will-change: transform;
+    }
+
+    .logo-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: none;
+      pointer-events: none;
+    }
+
+    /* 눈 뜬 이미지 고정 */
+    #logoOpen {
+      z-index: 1;
+      opacity: 1;
+    }
+
+    /* 눈 감은 오버레이 */
+    #logoClosed {
+      z-index: 2;
+      opacity: 0;
+      will-change: opacity;
+    }
+
+    /* 2. 타이핑 문구 영역 (Curvilingus 폰트 복원) */
+    .typewriter-stage {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      width: 90vw;
+      text-align: center;
+    }
+
+    .type-text {
+      font-family: var(--font-en-curv);
+      font-size: clamp(2.2rem, 5.2vw, 5.0rem);
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      text-shadow: none;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 메인 드롭 & 줌인 영역 -->
+  <div class="main-stage" id="mainStage">
+    <!-- 1순위 상단: MAKE IT FAST -->
+    <div class="text-fast" id="dropFast">MAKE IT FAST</div>
+
+    <!-- 2순위 중간: MAKE IT NICE -->
+    <div class="text-nice" id="dropNice">MAKE IT NICE</div>
+
+    <!-- 3순위 하단: 나이스웨이 로고 (드롭 + 둥실 플로팅) -->
+    <div class="logo-container" id="dropLogo">
+      <div class="logo-float-wrapper" id="logoFloat">
+        <img src="./images/niceway_logo.png" id="logoOpen" class="logo-img" alt="NICE-WAY Open Eyes">
+        <img src="./images/niceway_logo_blink.png" id="logoClosed" class="logo-img" alt="NICE-WAY Closed Eyes">
+      </div>
+    </div>
+  </div>
+
+  <!-- 타이핑 문구 영역 (마침표 포함) -->
+  <div class="typewriter-stage" id="typeStage">
+    <span class="type-text" id="typeTarget"></span>
+  </div>
+
+  <script>
+    const mainStage = document.getElementById('mainStage');
+    const dropFast = document.getElementById('dropFast');
+    const dropNice = document.getElementById('dropNice');
+    const dropLogo = document.getElementById('dropLogo');
+    const logoFloat = document.getElementById('logoFloat');
+    
+    const logoOpen = document.getElementById('logoOpen');
+    const logoClosed = document.getElementById('logoClosed');
+
+    const typeStage = document.getElementById('typeStage');
+    const typeTarget = document.getElementById('typeTarget');
+
+    // 마침표(.) 포함 문구
+    const phrase = "One Drop, A Nice Memory.";
+    let typingInterval = null;
+    let floatTween = null;
+
+    // 플리커 없는 눈꺼풀 오버레이 깜빡임 함수
+    function blinkEyes(times = 2, speed = 0.22) {
+      const blinkTL = gsap.timeline();
+      for(let i = 0; i < times; i++) {
+        blinkTL
+          .to(logoClosed, { opacity: 1, duration: 0.02 }, `+=${speed * 1.8}`)
+          .to(logoClosed, { opacity: 0, duration: 0.02 }, `+=${speed}`);
+      }
+      return blinkTL;
+    }
+
+    // 둥실둥실(Floating) 시작 함수
+    function startFloating() {
+      if (floatTween) floatTween.kill();
+      floatTween = gsap.to(logoFloat, {
+        y: -6,
+        rotation: 1.0,
+        duration: 1.8,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1
+      });
+    }
+
+    // 초기 상태 리셋
+    function resetAll() {
+      if (typingInterval) clearInterval(typingInterval);
+      if (floatTween) {
+        floatTween.kill();
+        floatTween = null;
+      }
+
+      gsap.set(logoFloat, { y: 0, rotation: 0 });
+      gsap.set(mainStage, { scale: 1, opacity: 1, zIndex: 10 });
+      gsap.set(dropLogo, { y: '-130vh', opacity: 1 });
+      gsap.set(dropNice, { y: '-130vh', opacity: 1 });
+      gsap.set(dropFast, { y: '-130vh', opacity: 1 });
+      gsap.set(logoClosed, { opacity: 0 });
+
+      gsap.set(typeStage, { opacity: 0 });
+      typeTarget.textContent = "";
+    }
+
+    resetAll();
+
+    // 메인 마스터 타임라인
+    const masterTL = gsap.timeline({ repeat: -1 });
+
+    // ==========================================
+    // STEP 1: 상단에서 차분하게 착지 (로고 -> NICE -> FAST)
+    // ==========================================
+    masterTL
+      // 1. 하단 로고 착지
+      .to(dropLogo, {
+        y: 0,
+        duration: 1.8,
+        ease: 'power3.out'
+      })
+      // 2. 중간 MAKE IT NICE 착지
+      .to(dropNice, {
+        y: 0,
+        duration: 1.7,
+        ease: 'power3.out'
+      }, "-=1.4")
+      // 3. 최상단 MAKE IT FAST 착지
+      .to(dropFast, {
+        y: 0,
+        duration: 1.6,
+        ease: 'power3.out'
+      }, "-=1.4")
+
+    // ==========================================
+    // STEP 2: 둥실둥실 + 미세 줌인 + 눈 깜빡임 -> 부드럽게 줌인 폭발!
+    // ==========================================
+      // 착지와 동시에 둥실둥실 플로팅 시작
+      .add(() => {
+        startFloating();
+      }, "-=0.2")
+
+      // 4.2초 동안 미세하게 줌인 (1.0 -> 1.08)
+      .to(mainStage, {
+        scale: 1.08,
+        duration: 4.2,
+        ease: 'none'
+      })
+
+      // 4초 서서히 커지는 도중 눈 깜빡임 연동
+      .add(blinkEyes(2, 0.22), "<+=0.8")
+
+      // '틱' 튀는 현상 방지: 플로팅을 강제로 끄지 않고 그대로 화면 앞으로 휙 줌인
+      .to(mainStage, {
+        scale: 4.5,
+        opacity: 0,
+        duration: 0.75,
+        ease: 'power3.in'
+      })
+
+      // 완전히 화면 밖으로 사라진 후에만 백그라운드에서 플로팅 종료
+      .add(() => {
+        if (floatTween) {
+          floatTween.kill();
+          floatTween = null;
+        }
+      })
+
+    // ==========================================
+    // STEP 3: One Drop, A Nice Memory. 타이핑 효과
+    // ==========================================
+      .set(typeStage, { opacity: 1 })
+      .add(() => {
+        let i = 0;
+        typeTarget.textContent = "";
+        typingInterval = setInterval(() => {
+          if (i < phrase.length) {
+            typeTarget.textContent += phrase[i];
+            i++;
+          } else {
+            clearInterval(typingInterval);
+          }
+        }, 130);
+      })
+      
+      // 타이핑 완료 후 여운 대기 (4.0초)
+      .to({}, { duration: 4.0 })
+
+      // 부드러운 페이드아웃
+      .to(typeStage, {
+        opacity: 0,
+        duration: 1.0,
+        ease: 'power2.inOut'
+      })
+
+    // ==========================================
+    // STEP 4: 루프 리셋 후 무한 반복
+    // ==========================================
+      .add(() => {
+        resetAll();
+      });
+
+  </script>
+</body>
+</html>

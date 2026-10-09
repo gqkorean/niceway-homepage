@@ -1,0 +1,43 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl Material
+Ka 0.000000 0.000000 0.000000
+Kd 0.752941 0.752941 0.752941
+Ks 0.330000 0.330000 0.330000
+
+newmtl Translucent_Glass_Gray
+Ka 0.000000 0.000000 0.000000
+Kd 0.658824 0.658824 0.658824
+Ks 0.330000 0.330000 0.330000
+d 0.260000
+
+newmtl Logo_heinz_01kopie
+Ka 0.000000 0.000000 0.000000
+Kd 0.843137 0.850980 0.815686
+Ks 0.330000 0.330000 0.330000
+map_Kd Heinz_bottle/Logo_heinz_01kopie.png
+
+newmtl Logo_heinz_03
+Ka 0.000000 0.000000 0.000000
+Kd 0.823529 0.815686 0.807843
+Ks 0.330000 0.330000 0.330000
+map_Kd Heinz_bottle/Logo_heinz_03.png
+
+newmtl _auto_4
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl ketchup_and_mustard_clipart_heinz_ketchup_bottle_label_food_text_meal_transparent_png_921366
+Ka 0.000000 0.000000 0.000000
+Kd 0.360784 0.356863 0.333333
+Ks 0.330000 0.330000 0.330000
+map_Kd Heinz_bottle/ketchup_and_mustard_clipart_heinz_ketchup_bottle_label_food_text_meal_transparent_png_921366.png
+
+newmtl Color_A06
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.000000 0.000000
+Ks 0.330000 0.330000 0.330000
+

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Drop, A Nice Memory - NICEWAY</title>
+  
+  <!-- Curvilingus 로컬 폰트 및 백업 세리프 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Mouse+Memoirs&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    :root {
+      --heinz-red: #A6192E;
+      --heinz-dark-red: #680A18;
+      --heinz-burgundy: #42060F;
+      --accent-yellow: #F6B828;
+      --cream-bg: #FAF4E8;
+      --border-light: #EAE5DC;
+      --text-dark: #1A1A1A;
+    }
+
+    @font-face {
+      font-family: var(--font-en-curv);
+      src: local('Curvilingus'), local('Curvilingus-Regular');
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: var(--font-en-curv);
+    }
+
+    /* 1. 상단 바 (비율: 1 = 25vh) */
+    .bar-top {
+      height: 25vh;
+      flex: 1;
+      background-color: var(--heinz-dark-red);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #FFFFFF;
+      font-size: clamp(1.4rem, 3.6vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      z-index: 20;
+      box-shadow: none;
+      transition: background-color 0.8s cubic-bezier(0.25, 1, 0.5, 1), color 0.8s ease;
+    }
+
+    /* 2. 중앙 롤링 영역 (비율: 2 = 50vh) */
+    .stage-center {
+      height: 50vh;
+      flex: 2;
+      position: relative;
+      width: 100vw;
+      background-color: var(--heinz-red);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      z-index: 10;
+      transition: background-color 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* 3. 하단 바 (비율: 1 = 25vh) */
+    .bar-bottom {
+      height: 25vh;
+      flex: 1;
+      background-color: var(--heinz-burgundy);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #FFFFFF;
+      font-size: clamp(2rem, 5.5vw, 5.8rem);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      z-index: 20;
+      box-shadow: none;
+      transition: background-color 0.8s cubic-bezier(0.25, 1, 0.5, 1), color 0.8s ease;
+    }
+
+    /* 중앙 초대형 문장 컨테이너 (글자색 흰색 고정) */
+    .sentence-row {
+      font-family: var(--font-en-special);
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2.2vw;
+      font-size: clamp(4.5rem, 18.5vw, 22rem);
+      font-weight: 700;
+      color: #FFFFFF !important;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      visibility: hidden;
+      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
+    }
+
+    /* MAKE 묶음: MA와 KE는 공백 없이 결합 */
+    .word-make {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0;
+    }
+
+    .chunk {
+      display: inline-block;
+      will-change: transform;
+    }
+
+    /* FAST / NICE 슬롯 프레임 */
+    .slot-frame {
+      display: inline-block;
+      height: 1.25em;
+      overflow: hidden;
+      vertical-align: middle;
+      padding: 0 0.18em;
+      margin: 0 -0.18em;
+    }
+
+    .slot-wheel {
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+    }
+
+    .slot-cell {
+      height: 1.25em;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      color: #FFFFFF !important;
+      padding-right: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 바 -->
+  <header class="bar-top" id="topBar">
+    <span>One Drop, A Nice Memory.</span>
+  </header>
+
+  <!-- 중앙 롤링 스테이지 -->
+  <main class="stage-center" id="stage">
+    <!-- 1세트: MAKE IT FAST -->
+    <div class="sentence-row" id="row1">
+      <div class="word-make">
+        <span class="chunk c-ma">MA</span>
+        <span class="chunk c-ke">KE</span>
+      </div>
+      <div class="chunk c-it">IT</div>
+      <div class="chunk c-action">
+        <div class="slot-frame">
+          <div class="slot-wheel" id="wheel1">
+            <div class="slot-cell">FAST</div>
+            <div class="slot-cell">FAST</div>
+            <div class="slot-cell">FAST</div>
+            <div class="slot-cell">FAST</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2세트: MAKE IT NICE -->
+    <div class="sentence-row" id="row2">
+      <div class="word-make">
+        <span class="chunk c-ma">MA</span>
+        <span class="chunk c-ke">KE</span>
+      </div>
+      <div class="chunk c-it">IT</div>
+      <div class="chunk c-action">
+        <div class="slot-frame">
+          <div class="slot-wheel" id="wheel2">
+            <div class="slot-cell">NICE</div>
+            <div class="slot-cell">NICE</div>
+            <div class="slot-cell">NICE</div>
+            <div class="slot-cell">NICE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 하단 바 -->
+  <footer class="bar-bottom" id="bottomBar">
+    <span>NICEWAY</span>
+  </footer>
+
+  <script>
+    const topBar = document.getElementById('topBar');
+    const bottomBar = document.getElementById('bottomBar');
+    const stage = document.getElementById('stage');
+    const row1 = document.getElementById('row1');
+    const row2 = document.getElementById('row2');
+    
+    const chunks1 = [
+      row1.querySelector('.c-ma'),
+      row1.querySelector('.c-ke'),
+      row1.querySelector('.c-it'),
+      row1.querySelector('.c-action')
+    ];
+
+    const chunks2 = [
+      row2.querySelector('.c-ma'),
+      row2.querySelector('.c-ke'),
+      row2.querySelector('.c-it'),
+      row2.querySelector('.c-action')
+    ];
+
+    const wheel1 = document.getElementById('wheel1');
+    const wheel2 = document.getElementById('wheel2');
+
+    // 녹색 제거 -> 버건디 / 하인즈 레드 / 옐로우 / 크림 기반 고급 클래식 테마
+    const themes = {
+      base: {
+        top: '#680A18', topTxt: '#FFFFFF',
+        mid: '#A6192E', // 하인즈 레드
+        bot: '#42060F', botTxt: '#FFFFFF'
+      },
+      fast1: {
+        top: '#42060F', topTxt: '#FFFFFF',
+        mid: '#F6B828', // 웜 옐로우
+        bot: '#680A18', botTxt: '#FFFFFF'
+      },
+      fast2: {
+        top: '#FAF4E8', topTxt: '#680A18', // 크림 바
+        mid: '#680A18', // 다크 레드
+        bot: '#A6192E', botTxt: '#FFFFFF'
+      },
+      fast3: {
+        top: '#A6192E', topTxt: '#FFFFFF',
+        mid: '#42060F', // 버건디
+        bot: '#FAF4E8', botTxt: '#680A18'
+      },
+      nice1: {
+        top: '#680A18', topTxt: '#FFFFFF',
+        mid: '#A6192E', // 하인즈 레드
+        bot: '#F6B828', botTxt: '#42060F'
+      },
+      nice2: {
+        top: '#EAE5DC', topTxt: '#42060F', // 웜 크림
+        mid: '#F6B828', // 웜 옐로우
+        bot: '#42060F', botTxt: '#FFFFFF'
+      },
+      nice3: {
+        top: '#42060F', topTxt: '#FFFFFF',
+        mid: '#680A18', // 다크 레드
+        bot: '#FAF4E8', botTxt: '#680A18'
+      }
+    };
+
+    function applyTheme(t) {
+      topBar.style.backgroundColor = t.top;
+      topBar.style.color = t.topTxt;
+
+      stage.style.backgroundColor = t.mid;
+
+      bottomBar.style.backgroundColor = t.bot;
+      bottomBar.style.color = t.botTxt;
+    }
+
+    // 초기값 세팅 (상단 바 뒤에서 대기)
+    gsap.set([row1, row2], { visibility: 'visible' });
+    gsap.set(chunks1, { y: '-60vh' });
+    gsap.set(chunks2, { y: '-60vh' });
+    gsap.set(wheel1, { yPercent: -75 });
+    gsap.set(wheel2, { yPercent: -75 });
+    applyTheme(themes.base);
+
+    // 마스터 타임라인
+    const masterTL = gsap.timeline({ repeat: -1 });
+
+    // ==========================================
+    // 1. [MAKE IT FAST] 세트
+    // ==========================================
+    masterTL.to(chunks1, {
+      y: 0,
+      duration: 1.0,
+      ease: 'power3.out',
+      stagger: 0.12
+    })
+
+    // FAST 위에서 아래로(↓) 3회 롤링 + 1초 텀 & 3단 색상 전환
+    .to(wheel1, {
+      yPercent: -50,
+      duration: 0.55,
+      ease: 'power2.inOut',
+      onStart: () => applyTheme(themes.fast1)
+    }, "+=1.0")
+
+    .to(wheel1, {
+      yPercent: -25,
+      duration: 0.55,
+      ease: 'power2.inOut',
+      onStart: () => applyTheme(themes.fast2)
+    }, "+=1.0")
+
+    .to(wheel1, {
+      yPercent: 0,
+      duration: 0.6,
+      ease: 'power3.out',
+      onStart: () => applyTheme(themes.fast3)
+    }, "+=1.0")
+
+    // 하단바 뒤로 시간차 퇴장
+    .to(chunks1, {
+      y: '60vh',
+      duration: 0.85,
+      ease: 'power3.in',
+      stagger: 0.08
+    }, "+=1.0")
+
+
+    // ==========================================
+    // 2. [MAKE IT NICE] 세트
+    // ==========================================
+    .to(chunks2, {
+      y: 0,
+      duration: 1.0,
+      ease: 'power3.out',
+      stagger: 0.12
+    }, "-=0.3")
+
+    // NICE 위에서 아래로(↓) 3회 롤링 + 1초 텀 & 3단 색상 전환
+    .to(wheel2, {
+      yPercent: -50,
+      duration: 0.55,
+      ease: 'power2.inOut',
+      onStart: () => applyTheme(themes.nice1)
+    }, "+=1.0")
+
+    .to(wheel2, {
+      yPercent: -25,
+      duration: 0.55,
+      ease: 'power2.inOut',
+      onStart: () => applyTheme(themes.nice2)
+    }, "+=1.0")
+
+    .to(wheel2, {
+      yPercent: 0,
+      duration: 0.6,
+      ease: 'power3.out',
+      onStart: () => applyTheme(themes.nice3)
+    }, "+=1.0")
+
+    // 하단바 뒤로 시간차 퇴장
+    .to(chunks2, {
+      y: '60vh',
+      duration: 0.85,
+      ease: 'power3.in',
+      stagger: 0.08
+    }, "+=1.0")
+
+    // 루프 리셋
+    .add(() => {
+      gsap.set(chunks1, { y: '-60vh' });
+      gsap.set(wheel1, { yPercent: -75 });
+      gsap.set(chunks2, { y: '-60vh' });
+      gsap.set(wheel2, { yPercent: -75 });
+      applyTheme(themes.base);
+    });
+
+  </script>
+</body>
+</html>

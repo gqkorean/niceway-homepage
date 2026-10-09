@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ko-KR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NICE-WAY | 3분 미식 레시피</title>
+
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Mouse+Memoirs&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --heinz-red: #A6192E;
+      --heinz-dark-red: #7A0F1F;
+      --naver-green: #03C75A;
+      --accent-yellow: #F6B828;
+      --cream-bg: #FAF4E8;
+      --card-cream: #FAF7F2;
+      --text-dark: #1A1A1A;
+      --border-light: #EAE5DC;
+      --header-height: 72px;
+
+      --font-kr: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-en-curv: 'Mouse Memoirs', sans-serif;
+      --font-en-special: 'Luckiest Guy', cursive;
+      --font-body: 'Mouse Memoirs', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    @font-face {
+      font-family: 'Curvilingus';
+      src: local('Curvilingus'), local('Caprasimo');
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--cream-bg);
+      font-family: var(--font-body);
+      color: var(--text-dark);
+      letter-spacing: -0.025em;
+      overflow-x: hidden;
+    }
+
+    .title-en { font-family: var(--font-en-curv); letter-spacing: 0.02em; }
+    .title-kr { font-family: var(--font-kr); font-weight: 900; letter-spacing: -0.035em; }
+
+    .line-icon {
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* 헤더 */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--header-height);
+      background-color: var(--heinz-red);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .header-left, .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .circle-icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+    .circle-icon-btn:hover { background-color: rgba(255, 255, 255, 0.35); }
+
+    .header-logo-anchor {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .header-logo-anchor:hover { transform: translate(-50%, -50%) scale(1.08); }
+    .header-logo-img { height: 42px; width: auto; object-fit: contain; }
+
+    .header-search-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      padding: 6px 14px;
+      gap: 8px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .header-search-bar input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #FFFFFF;
+      font-size: 0.92rem;
+      width: 130px;
+      cursor: pointer;
+    }
+    .header-search-bar input::placeholder { color: rgba(255, 255, 255, 0.8); }
+
+    /* 드롭다운 검색 오버레이 */
+    .search-dropdown-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #FFFFFF;
+      color: var(--text-dark);
+      z-index: 2500;
+      transform: translateY(-100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+      padding: 2.2rem 2rem 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .search-dropdown-overlay.active { transform: translateY(0); }
+    .search-panel-inner { width: 100%; max-width: 780px; }
+    .search-input-box {
+      display: flex;
+      align-items: center;
+      border: 2px solid var(--text-dark);
+      border-radius: 999px;
+      padding: 6px 8px 6px 20px;
+      margin-bottom: 1.5rem;
+      gap: 12px;
+    }
+    .search-input-box input { flex: 1; border: none; outline: none; font-size: 1.15rem; font-family: var(--font-kr); }
+    .btn-search-submit {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--heinz-red);
+      color: #FFF;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-search-cancel { background: none; border: none; font-weight: 800; font-size: 1.05rem; cursor: pointer; margin-left: 12px; }
+
+    .popular-tag-list { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; }
+    .popular-tag-list button {
+      background: var(--card-cream);
+      border: 1px solid #EAE5DC;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .popular-tag-list button:hover { background: var(--heinz-red); color: #FFF; }
+
+    .search-suggestions-wrap { display: none; width: 100%; max-height: 400px; overflow-y: auto; }
+    .search-suggestions-wrap.active { display: block; }
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: inherit;
+      border-bottom: 1px solid #F5F0E8;
+    }
+    .suggestion-item:hover { background: #F8F3EA; }
+    .suggestion-item img { width: 48px; height: 48px; object-fit: contain; border-radius: 8px; background: #FFF; }
+    .suggestion-info h5 { font-size: 1.05rem; font-weight: 800; }
+    .suggestion-info span { font-size: 0.78rem; font-weight: 700; color: var(--heinz-red); }
+
+    /* 1/4 원형 드로어 */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 1800;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      backdrop-filter: blur(5px);
+    }
+    .drawer-backdrop.active { opacity: 1; pointer-events: auto; }
+
+    .quarter-drawer-left {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: clamp(440px, 54vw, 700px);
+      height: clamp(420px, 58vh, 600px);
+      background: #FFFFFF;
+      color: var(--text-dark);
+      z-index: 2000;
+      border-radius: 0 0 100% 0;
+      padding: 3rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      transform-origin: top left;
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 1.05s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .quarter-drawer-left.active { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+    .quarter-drawer-right {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: clamp(480px, 58vw, 750px);
+      height: clamp(450px, 60vh, 640px);
+      background: var(--cream-bg);
+      color: var(--heinz-red);
+      z-index: 2000;
+      border-radius: 0 0 0 100%;
+      box-shadow: -25px 25px 60px rgba(0, 0, 0, 0.35);
+      padding: 3rem 4rem 3rem 5.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      transform-origin: top right;
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 1.05s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .quarter-drawer-right.active { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+    .drawer-close-btn { background: none; border: none; font-size: 2.2rem; cursor: pointer; color: inherit; transition: transform 0.25s; }
+    .drawer-close-btn:hover { transform: rotate(90deg); }
+
+    .menu-link-list { list-style: none; margin-top: 0.8rem; display: flex; flex-direction: column; align-items: flex-end; gap: 1.1rem; text-align: right; }
+    .menu-link-list a { font-family: var(--font-en-curv); font-size: 1.95rem; line-height: 1.1; color: var(--heinz-red); text-decoration: none; transition: color 0.2s, transform 0.2s; display: inline-block; white-space: nowrap; }
+    .menu-link-list a:hover { color: var(--accent-yellow); transform: translateX(-8px); }
+
+    /* 레시피 본문 */
+    .recipe-container {
+      margin-top: var(--header-height);
+      padding: 3.5rem 1.5rem 5rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .recipe-split {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3.5rem;
+      align-items: flex-start;
+      margin-bottom: 4rem;
+    }
+
+    .recipe-headline-group { margin-bottom: 0.8rem; }
+    .recipe-headline-kr {
+      font-size: 2.8rem;
+      color: var(--heinz-dark-red);
+      line-height: 1.15;
+    }
+    .recipe-subline-en {
+      display: block;
+      font-size: 1.5rem;
+      color: var(--heinz-red);
+      margin-top: 6px;
+    }
+
+    .recipe-stats {
+      display: flex;
+      gap: 1.8rem;
+      margin: 1.4rem 0;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid #E2DDD5;
+    }
+    .stat-box small {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .stat-box strong {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--heinz-dark-red);
+    }
+
+    .ingredients-list {
+      list-style: none;
+      margin: 1.5rem 0 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .ingredients-list li {
+      font-size: 1.02rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px dashed #E5DFD5;
+    }
+    .ingredients-list strong { color: var(--heinz-dark-red); margin-right: 8px; }
+
+    .step-card { margin-bottom: 3rem; }
+    .step-card h4 { font-family: var(--font-en-curv); font-size: 1.35rem; color: var(--heinz-dark-red); margin-bottom: 0.5rem; }
+    .step-card p { font-size: 1.02rem; color: #444; line-height: 1.65; margin-bottom: 1.2rem; }
+    .step-img-box {
+      max-width: 680px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    .step-img-box img { width: 100%; height: auto; display: block; }
+
+    .sticky-box { position: sticky; top: 110px; }
+    .video-player-card {
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      height: 320px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+      cursor: pointer;
+    }
+    .video-player-card img { width: 100%; height: 100%; object-fit: cover; }
+    .play-pill {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: #FFF;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-weight: 900;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    .featured-sauce-list { display: flex; flex-direction: column; gap: 12px; }
+    .featured-shop-box {
+      background: #FFF;
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #EAE5DC;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+      transition: transform 0.2s;
+    }
+    .featured-shop-box:hover { transform: translateY(-2px); }
+    .featured-shop-box img { width: 44px; height: 60px; object-fit: contain; }
+    .btn-naver-shop {
+      background: var(--naver-green);
+      color: #FFF;
+      padding: 7px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    /* COOK WITH US 자동 무한 롤링 캐러셀 */
+    .cook-with-us-section {
+      border-top: 2px solid #EAE5DC;
+      padding-top: 4.5rem;
+      margin-top: 3rem;
+      overflow: hidden;
+    }
+    .cook-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .cook-header-row h2 {
+      font-family: var(--font-en-curv);
+      font-size: 2.6rem;
+      color: var(--heinz-red);
+      letter-spacing: 0.02em;
+    }
+
+    .cook-marquee-viewport {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      padding: 1rem 0 2rem;
+    }
+    .cook-marquee-track {
+      display: flex;
+      gap: 24px;
+      width: max-content;
+      animation: cookScrollLeft 38s linear infinite;
+    }
+    .cook-marquee-viewport:hover .cook-marquee-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes cookScrollLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .cook-recipe-card {
+      width: 320px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #EAE5DC;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .cook-recipe-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 35px rgba(166, 25, 46, 0.15);
+    }
+    .cook-card-thumb {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cook-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .cook-recipe-card:hover .cook-card-thumb img { transform: scale(1.08); }
+    .cook-card-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+    }
+    .cook-card-body h4 {
+      font-family: var(--font-en-curv);
+      font-size: 1.35rem;
+      color: var(--heinz-dark-red);
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+    .cook-card-meta {
+      font-size: 0.82rem;
+      color: #888;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    footer {
+      background-color: #FFFFFF;
+      color: #1A1A1A;
+      padding: 3.5rem 1.5rem 2rem;
+      border-top: 1px solid #EAE5DC;
+      margin-top: 4rem;
+    }
+    .footer-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 860px) {
+      .recipe-split { grid-template-columns: 1fr; }
+      .sticky-box { position: static; }
+      .recipe-headline-kr { font-size: 2.2rem; }
+      .header-search-bar input { width: 70px; }
+    }
+  </style>
+  <link rel="stylesheet" href="niceway-common-v17.css" />
+</head>
+<body>
+
+  <!-- 딤 백드롭 -->
+  <div class="drawer-backdrop" id="backdrop" onclick="closeAllDrawers()"></div>
+
+  <!-- 상단 실시간 검색 오버레이 -->
+  <div class="search-dropdown-overlay" id="searchDropdown">
+    <div class="search-panel-inner">
+      <div style="display:flex; align-items:center; width:100%; margin-bottom:1.5rem;">
+        <div class="search-input-box" style="flex:1; margin-bottom:0;">
+          <input type="text" id="liveSearchInput" placeholder="제품 또는 레시피를 검색해보세요 (예: 케첩, 치킨, 뇨끼...)" autofocus />
+          <button class="btn-search-submit" onclick="performLiveSearch()">
+            <svg class="line-icon" width="20" height="20" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+        </div>
+        <button class="btn-search-cancel" onclick="closeSearchDropdown()">Cancel</button>
+      </div>
+
+      <div class="search-popular-wrap" id="popularWrap">
+        <h4>Popular Searches</h4>
+        <div class="popular-tag-list">
+          <button onclick="setSearchTerm('Ketchup')">Ketchup (케첩)</button>
+          <button onclick="setSearchTerm('Mustard')">Mustard (머스타드)</button>
+          <button onclick="setSearchTerm('Relish')">Relish (렐리쉬)</button>
+          <button onclick="setSearchTerm('Burger')">Burger (버거)</button>
+          <button onclick="setSearchTerm('Tacos')">Tacos (타코)</button>
+          <button onclick="setSearchTerm('Gnocchi')">Gnocchi (뇨끼)</button>
+        </div>
+      </div>
+
+      <div class="search-suggestions-wrap" id="suggestionsWrap">
+        <h4>Top Suggestions</h4>
+        <div id="suggestionsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 좌측 1/4 원형 브랜드 드로어 -->
+  <div class="quarter-drawer-left" id="drawerLeft">
+    <button class="drawer-close-btn" onclick="closeAllDrawers()">✕</button>
+    <h3 class="title-en" style="font-size: 2.2rem; color: var(--heinz-red); margin-bottom: 1.5rem;">Nice-Way Brands</h3>
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+      <a href="index.html" style="text-align: center; text-decoration: none; color: inherit;">
+        <div style="width: 95px; height: 95px; border-radius: 50%; background: var(--heinz-red); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.8rem; padding: 10px;">
+          <img src="./images/niceway_character_logo.png" alt="Nice-Way" style="width: 100%; height: 100%; object-fit: contain;" />
+        </div>
+        <strong style="font-size: 1.05rem; color: var(--heinz-dark-red);">NICEWAY SAUCE</strong>
+      </a>
+    </div>
+  </div>
+
+  <!-- 우측 1/4 원형 메뉴 드로어 -->
+  <div class="quarter-drawer-right" id="drawerRight">
+    <button class="drawer-close-btn" onclick="closeAllDrawers()">✕</button>
+    <div style="font-size: 2.3rem; color: var(--heinz-red); margin-bottom: 0.5rem;" class="title-en">NICE-WAY</div>
+    <ul class="menu-link-list">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="about.html">ABOUT</a></li>
+      <li><a href="products.html">PRODUCT</a></li>
+      <li><a href="nice-works.html">NICE WORKS</a></li>
+      <li><a href="index.html#recipes-carousel-anchor">RECIPES</a></li>
+      <li><a href="index.html#samples-anchor">GET SAMPLES</a></li>
+    </ul>
+  </div>
+
+  <!-- 헤더 (로고: main_typo.png & Search 인풋 바 완비) -->
+  <header>
+    <div class="header-left">
+      <button class="circle-icon-btn" onclick="openLeftDrawer()" aria-label="브랜드 메뉴">
+        <svg class="line-icon" width="22" height="22" viewBox="0 0 24 24">
+          <circle cx="5" cy="5" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="19" cy="5" r="1.5"></circle>
+          <circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle>
+          <circle cx="5" cy="19" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle><circle cx="19" cy="19" r="1.5"></circle>
+        </svg>
+      </button>
+    </div>
+
+    <!-- 중앙 로고: main_typo.png -->
+    <a href="index.html" class="header-logo-anchor">
+      <img src="./images/niceway_logo_full.png" alt="NICE-WAY" class="header-logo-img" />
+    </a>
+
+    <div class="header-right">
+      <div class="header-search-bar" onclick="openSearchDropdown()">
+        <input type="text" placeholder="Search..." readonly />
+        <svg class="line-icon" width="18" height="18" viewBox="0 0 24 24" style="color:#FFF;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+
+      <button class="circle-icon-btn" onclick="openRightDrawer()" aria-label="메뉴 열기">
+        <svg class="line-icon" width="22" height="22" viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="recipe-container">
+    <div class="recipe-split">
+      <div>
+        <div class="recipe-headline-group">
+          <h1 class="recipe-headline-kr title-kr" id="rTitleKr"></h1>
+          <span class="recipe-subline-en title-en" id="rTitleEn"></span>
+        </div>
+        <div style="font-weight: 700; color: #777; font-size: 0.95rem;">By Nice-Way Kitchen • Updated 2026</div>
+
+        <div class="recipe-stats">
+          <div class="stat-box"><small>Prep Time</small><strong id="rPrep">15 MIN</strong></div>
+          <div class="stat-box"><small>Total Time</small><strong id="rTotal">45 MIN</strong></div>
+          <div class="stat-box"><small>Servings</small><strong id="rServings">4 Servings</strong></div>
+          <div class="stat-box"><small>Calories</small><strong id="rCal">180 kcal</strong></div>
+        </div>
+
+        <p style="font-size: 1.05rem; line-height: 1.7; color: #444;" id="rIntro"></p>
+
+        <div>
+          <h3 class="title-kr" style="font-size: 1.65rem; color: var(--heinz-red); margin: 2.5rem 0 1rem;">Ingredients (준비 재료)</h3>
+          <ul class="ingredients-list" id="rIngredients"></ul>
+        </div>
+
+        <div>
+          <h3 class="title-kr" style="font-size: 1.65rem; color: var(--heinz-red); margin-bottom: 1.5rem;">Instructions (조리 순서)</h3>
+          <div id="rSteps"></div>
+        </div>
+      </div>
+
+      <div class="sticky-box">
+        <div class="video-player-card" onclick="alert('요리 동영상이 재생됩니다.')">
+          <img id="rVideoThumb" src="" alt="Video" />
+          <div class="play-pill"><span>▶</span> Play Video</div>
+        </div>
+
+        <h4 class="title-kr" style="font-size: 1.15rem; margin-bottom: 0.8rem; color: var(--heinz-dark-red);">
+          Shop Featured Products (레시피 사용 소스)
+        </h4>
+        <div class="featured-sauce-list" id="featuredSauceContainer"></div>
+      </div>
+    </div>
+
+    <!-- ===================================================
+         [10종 무한 롤링 캐러셀] COOK WITH US
+    =================================================== -->
+    <section class="cook-with-us-section">
+      <div class="cook-header-row">
+        <h2>COOK WITH US</h2>
+      </div>
+
+      <div class="cook-marquee-viewport">
+        <div class="cook-marquee-track" id="cookMarqueeTrack"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div style="font-size: 1.8rem; color: var(--heinz-red);" class="title-en">NICE-WAY</div>
+      <p style="color: #777; font-size: 0.9rem;">© 2026 NICEWAY INC. All Rights Reserved. | MAKE IT FAST, MAKE IT NICE</p>
+    </div>
+  </footer>
+
+  <script>
+    function openLeftDrawer() {
+      document.getElementById('drawerLeft').classList.add('active');
+      document.getElementById('backdrop').classList.add('active');
+    }
+    function openRightDrawer() {
+      document.getElementById('drawerRight').classList.add('active');
+      document.getElementById('backdrop').classList.add('active');
+    }
+    function closeAllDrawers() {
+      const dLeft = document.getElementById('drawerLeft');
+      const dRight = document.getElementById('drawerRight');
+      const backdrop = document.getElementById('backdrop');
+      if (dLeft) dLeft.classList.remove('active');
+      if (dRight) dRight.classList.remove('active');
+      closeSearchDropdown();
+      if (backdrop) backdrop.classList.remove('active');
+    }
+
+    // 실시간 검색 기능
+    const searchDB = [
+      { type: 'product', title: '하바네로 토마토 케찹 (Habanero Ketchup)', category: 'Product', img: './images/marketing-view-color-front_f80d2597d9a9892da37a544c76309e02457b6614_3b0764081030cd9a35b605b96603b8c9.png', url: 'product-detail.html?id=habanero' },
+      { type: 'product', title: '치폴레 허니 머스타드 (Chipotle Mustard)', category: 'Product', img: './images/marketing-view-color-front_content-hub-11641304_0fc95c522a543b6d557dbe78be25babf.png', url: 'product-detail.html?id=mustard' },
+      { type: 'product', title: '크런치 딜 렐리쉬 (Dill Relish)', category: 'Product', img: './images/marketing-view-color-front_afb8a1cadf6001fbaf0d2926cc3265664b22d2b2_614616a42c2426dccc0cd0962fdb4519 (1).png', url: 'product-detail.html?id=relish' },
+      { type: 'product', title: '홈스타일 브라운 그레이비 (Brown Gravy)', category: 'Product', img: './images/marketing-view-color-front_content-hub-7783424_226d284a297b3ff455354be80a5dd560.png', url: 'product-detail.html?id=gravy' },
+      { type: 'recipe', title: '갈릭 레몬 쉬림프 꼬치구이 (Shrimp Kabobs)', category: 'Recipe', img: 'https://images.unsplash.com/photo-1559742811-822873691df8?auto=format&fit=crop&w=400&q=80', url: 'recipe-detail.html?id=shrimp' },
+      { type: 'recipe', title: '남은 치킨 핫 브리오슈 버거 (Chicken Burger)', category: 'Recipe', img: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=400&q=80', url: 'recipe-detail.html?id=chicken' },
+      { type: 'recipe', title: '아메리칸 더티 치즈 로디드 프라이 (Poutine Fries)', category: 'Recipe', img: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=400&q=80', url: 'recipe-detail.html?id=fries' },
+      { type: 'recipe', title: '치킨 팟파이 크림 뇨끼 (Gnocchi)', category: 'Recipe', img: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=400&q=80', url: 'recipe-detail.html?id=gnocchi' }
+    ];
+
+    function openSearchDropdown() {
+      document.getElementById('searchDropdown').classList.add('active');
+      document.getElementById('backdrop').classList.add('active');
+      setTimeout(() => document.getElementById('liveSearchInput').focus(), 150);
+    }
+    function closeSearchDropdown() {
+      const sDrop = document.getElementById('searchDropdown');
+      if (sDrop) sDrop.classList.remove('active');
+      const bDrop = document.getElementById('backdrop');
+      if (bDrop) bDrop.classList.remove('active');
+      const input = document.getElementById('liveSearchInput');
+      if (input) input.value = '';
+      const pWrap = document.getElementById('popularWrap');
+      if (pWrap) pWrap.style.display = 'block';
+      const sWrap = document.getElementById('suggestionsWrap');
+      if (sWrap) sWrap.classList.remove('active');
+    }
+
+    function setSearchTerm(term) {
+      document.getElementById('liveSearchInput').value = term;
+      performLiveSearch();
+    }
+
+    const searchInput = document.getElementById('liveSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', performLiveSearch);
+    }
+
+    function performLiveSearch() {
+      const query = searchInput.value.trim().toLowerCase();
+      const popularWrap = document.getElementById('popularWrap');
+      const suggestionsWrap = document.getElementById('suggestionsWrap');
+      const suggestionsList = document.getElementById('suggestionsList');
+
+      if (!query) {
+        popularWrap.style.display = 'block';
+        suggestionsWrap.classList.remove('active');
+        return;
+      }
+
+      popularWrap.style.display = 'none';
+      suggestionsWrap.classList.add('active');
+
+      const matches = searchDB.filter(item => item.title.toLowerCase().includes(query) || item.category.toLowerCase().includes(query));
+
+      if (matches.length === 0) {
+        suggestionsList.innerHTML = `<div style="padding: 2rem; text-align:center; color:#888;">'${query}'에 대한 검색 결과가 없습니다.</div>`;
+      } else {
+        suggestionsList.innerHTML = matches.map(item => `
+          <a href="${item.url}" class="suggestion-item">
+            <img src="${item.img}" alt="${item.title}" />
+            <div class="suggestion-info">
+              <h5>${item.title}</h5>
+              <span>${item.category}</span>
+            </div>
+          </a>
+        `).join('');
+      }
+    }
+
+    // 10종 레시피 상세 데이터베이스
+    const recipeDB = {
+      shrimp: {
+        titleKr: "갈릭 레몬 쉬림프 꼬치구이",
+        titleEn: "Garlic Lemon Shrimp Kabobs",
+        prep: "15 MIN", total: "45 MIN", servings: "4 Servings", cal: "180 kcal",
+        intro: "나이스웨이 하바네로 케첩과 레몬즙, 다진 마늘의 환상적인 마리네이드! 숯불 그릴이나 에어프라이어에 구워내면 근사한 바비큐 파티 요리가 완성됩니다.",
+        videoThumb: "https://images.unsplash.com/photo-1559742811-822873691df8?auto=format&fit=crop&w=800&q=80",
+        sauces: [{ name: "하바네로 토마토 케찹", img: "./images/marketing-view-color-front_f80d2597d9a9892da37a544c76309e02457b6614_3b0764081030cd9a35b605b96603b8c9.png" }],
+        ingredients: [
+          { qty: "1/2 cup", name: "나이스웨이 하바네로 토마토 케찹" },
+          { qty: "3 tbsp", name: "신선한 생 레몬즙" },
+          { qty: "2 cloves", name: "다진 마늘" },
+          { qty: "500g", name: "손질된 통새우" }
+        ],
+        steps: [
+          { num: "Step 1", desc: "볼에 케첩, 레몬즙, 올리브유, 다진 마늘을 섞어 소스를 만듭니다.", img: "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=700&q=80" },
+          { num: "Step 2", desc: "새우를 꼬치에 꽂고 소스를 골고루 발라 20분간 마리네이드합니다.", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=700&q=80" },
+          { num: "Step 3", desc: "예열된 그릴 팬에 올려 앞뒤로 2분씩 노릇하게 굽습니다.", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=700&q=80" }
+        ]
+      },
+      chicken: {
+        titleKr: "남은 치킨 핫 브리오슈 버거",
+        titleEn: "Crispy Hot Brioche Chicken Burger",
+        prep: "5 MIN", total: "7 MIN", servings: "1 Serving", cal: "450 kcal",
+        intro: "배달 치킨의 완벽한 환생! 치폴레 허니 머스타드의 감칠맛과 딜 렐리쉬의 아삭함이 어우러진 꿀조합.",
+        videoThumb: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=800&q=80",
+        sauces: [
+          { name: "치폴레 허니 머스타드", img: "./images/marketing-view-color-front_content-hub-11641304_0fc95c522a543b6d557dbe78be25babf.png" },
+          { name: "크런치 딜 렐리쉬", img: "./images/marketing-view-color-front_afb8a1cadf6001fbaf0d2926cc3265664b22d2b2_614616a42c2426dccc0cd0962fdb4519 (1).png" }
+        ],
+        ingredients: [
+          { qty: "2~3조각", name: "남은 후라이드 치킨" },
+          { qty: "3 tbsp", name: "나이스웨이 치폴레 머스타드" },
+          { qty: "1 tbsp", name: "나이스웨이 딜 렐리쉬" }
+        ],
+        steps: [
+          { num: "Step 1", desc: "식은 치킨을 에어프라이어에 5분간 바삭하게 데웁니다.", img: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=700&q=80" },
+          { num: "Step 2", desc: "치킨에 치폴레 머스타드를 골고루 버무립니다.", img: "https://images.unsplash.com/photo-1527477244197-0f8c857732dc?auto=format&fit=crop&w=700&q=80" },
+          { num: "Step 3", desc: "구운 번에 렐리쉬와 양념 치킨을 얹어 완성합니다.", img: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=700&q=80" }
+        ]
+      },
+      fries: {
+        titleKr: "더티 치즈 로디드 프라이",
+        titleEn: "Dirty Cheese Loaded Poutine Fries",
+        prep: "3 MIN", total: "5 MIN", servings: "2 Servings", cal: "380 kcal",
+        intro: "감자튀김 위에 진한 브라운 그레이비 소스를 듬뿍 얹어 즐기는 정통 펍 스타일 푸틴 프라이.",
+        videoThumb: "https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=800&q=80",
+        sauces: [{ name: "홈스타일 브라운 그레이비", img: "./images/marketing-view-color-front_content-hub-7783424_226d284a297b3ff455354be80a5dd560.png" }],
+        ingredients: [{ qty: "200g", name: "감자튀김" }, { qty: "4 tbsp", name: "나이스웨이 브라운 그레이비" }, { qty: "적당량", name: "치즈" }],
+        steps: [
+          { num: "Step 1", desc: "감자튀김을 190도 에어프라이어에 8분간 바삭하게 튀깁니다.", img: "https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=700&q=80" },
+          { num: "Step 2", desc: "그레이비 소스를 데워 감자튀김 위에 치즈와 함께 부어줍니다.", img: "https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=700&q=80" }
+        ]
+      },
+      gnocchi: {
+        titleKr: "치킨 팟파이 크림 뇨끼",
+        titleEn: "Chicken Pot Pie Cream Gnocchi",
+        prep: "10 MIN", total: "20 MIN", servings: "2 Servings", cal: "420 kcal",
+        intro: "부드러운 감자 뇨끼에 닭가슴살과 브라운 그레이비, 생크림을 넣어 완성하는 럭셔리 홈파티 파스타.",
+        videoThumb: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=800&q=80",
+        sauces: [{ name: "홈스타일 브라운 그레이비", img: "./images/marketing-view-color-front_content-hub-7783424_226d284a297b3ff455354be80a5dd560.png" }],
+        ingredients: [{ qty: "250g", name: "감자 뇨끼" }, { qty: "1/2 cup", name: "나이스웨이 브라운 그레이비" }, { qty: "1/2 cup", name: "생크림" }],
+        steps: [
+          { num: "Step 1", desc: "팬에 버터를 두르고 뇨끼를 노릇하게 구워냅니다.", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=700&q=80" },
+          { num: "Step 2", desc: "그레이비와 크림을 부어 3분간 졸여내면 완성됩니다.", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=700&q=80" }
+        ]
+      }
+    };
+
+    // 10종 풀 추천 레시피 리스트 (무한 롤링)
+    const moreRecipesDB = [
+      { id: "shrimp", title: "GARLIC LEMON SHRIMP KABOBS", meta: "15 MIN • 4 SERVINGS", img: "https://images.unsplash.com/photo-1559742811-822873691df8?auto=format&fit=crop&w=700&q=80" },
+      { id: "chicken", title: "CRISPY HOT BRIOCHE BURGER", meta: "7 MIN • 1 SERVING", img: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=700&q=80" },
+      { id: "fries", title: "DIRTY CHEESE POUTINE FRIES", meta: "5 MIN • 2 SERVINGS", img: "https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=700&q=80" },
+      { id: "tacos", title: "HAWAIIAN BBQ CHICKEN TACOS", meta: "12 MIN • 3 SERVINGS", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=700&q=80" },
+      { id: "coconut-shrimp", title: "BANG BANG COCONUT SHRIMP", meta: "10 MIN • 2 SERVINGS", img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&w=700&q=80" },
+      { id: "ranch-wrap", title: "BACON RANCH LETTUCE WRAP", meta: "8 MIN • 2 SERVINGS", img: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=700&q=80" },
+      { id: "gnocchi", title: "CHICKEN POT PIE GNOCCHI", meta: "20 MIN • 2 SERVINGS", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=700&q=80" },
+      { id: "thai-wings", title: "STICKY THAI CHILI AIR WINGS", meta: "15 MIN • 3 SERVINGS", img: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=700&q=80" },
+      { id: "pork-ramen", title: "RICH BROWN TONKOTSU RAMEN", meta: "10 MIN • 1 SERVING", img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=80" },
+      { id: "brisket-sandwich", title: "TEXAS BBQ BRISKET SANDWICH", meta: "12 MIN • 2 SERVINGS", img: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=700&q=80" }
+    ];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const rId = urlParams.get('id') || 'shrimp';
+    const r = recipeDB[rId] || recipeDB.shrimp;
+
+    document.getElementById('rTitleKr').textContent = r.titleKr;
+    document.getElementById('rTitleEn').textContent = r.titleEn;
+    document.getElementById('rPrep').textContent = r.prep;
+    document.getElementById('rTotal').textContent = r.total;
+    document.getElementById('rServings').textContent = r.servings;
+    document.getElementById('rCal').textContent = r.cal;
+    document.getElementById('rIntro').textContent = r.intro;
+    document.getElementById('rVideoThumb').src = r.videoThumb;
+
+    const ingBox = document.getElementById('rIngredients');
+    r.ingredients.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${item.qty}</strong> ${item.name}`;
+      ingBox.appendChild(li);
+    });
+
+    const stepBox = document.getElementById('rSteps');
+    r.steps.forEach(st => {
+      const div = document.createElement('div');
+      div.className = 'step-card';
+      div.innerHTML = `
+        <h4>${st.num}</h4>
+        <p>${st.desc}</p>
+        <div class="step-img-box"><img src="${st.img}" alt="${st.num}" /></div>
+      `;
+      stepBox.appendChild(div);
+    });
+
+    const sauceContainer = document.getElementById('featuredSauceContainer');
+    r.sauces.forEach(sc => {
+      const box = document.createElement('div');
+      box.className = 'featured-shop-box';
+      box.innerHTML = `
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <img src="${sc.img}" alt="${sc.name}" />
+          <div>
+            <small style="color: #888; font-weight: 800; font-size: 0.72rem;">RECIPE PAIRING SAUCE</small>
+            <strong style="display: block; font-size: 0.98rem;">${sc.name}</strong>
+          </div>
+        </div>
+        <a href="https://smartstore.naver.com" target="_blank" class="btn-naver-shop">N스마트스토어 구매</a>
+      `;
+      sauceContainer.appendChild(box);
+    });
+
+    // 10종 무한 롤링 트랙 렌더링
+    const marqueeTrack = document.getElementById('cookMarqueeTrack');
+    const doubleList = [...moreRecipesDB, ...moreRecipesDB];
+
+    doubleList.forEach(item => {
+      const card = document.createElement('a');
+      card.href = `recipe-detail.html?id=${item.id}`;
+      card.className = 'cook-recipe-card';
+      card.innerHTML = `
+        <div class="cook-card-thumb"><img src="${item.img}" alt="${item.title}" /></div>
+        <div class="cook-card-body">
+          <h4>${item.title}</h4>
+          <span class="cook-card-meta">${item.meta}</span>
+        </div>
+      `;
+      marqueeTrack.appendChild(card);
+    });
+  </script>
+  <script src="niceway-common-v17.js"></script>
+</body>
+</html>
