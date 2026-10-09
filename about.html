@@ -382,6 +382,52 @@
       .story-hero-video .story-main-headline { font-size: clamp(2.8rem, 11.5vw, 4.9rem); line-height: .99; }
       .story-hero-copy { margin: 0 22px 12svh; }
     }
+
+    /* v22: editorial separator between ABOUT's cinematic hero and its chapter feed.
+       Mirrors the section rhythm of the NICE WORKS 'INSIDE THE WORKSHOP' panel. */
+    .about-intro {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 6.5rem 2rem 4.5rem;
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      gap: 6rem;
+      align-items: end;
+      background: var(--cream-bg);
+    }
+    .about-intro-label {
+      display: block;
+      font-family: var(--font-en-curv);
+      color: var(--heinz-red);
+      font-size: 1.2rem;
+      letter-spacing: .08em;
+    }
+    .about-intro h2 {
+      font-family: var(--font-en-special);
+      font-size: clamp(3rem, 6vw, 5.7rem);
+      line-height: .92;
+      color: var(--heinz-red);
+      font-weight: 400;
+      letter-spacing: -.015em;
+    }
+    .about-intro p {
+      font-family: var(--font-kr);
+      font-size: 1.06rem;
+      line-height: 1.85;
+      color: #5F564E;
+      max-width: 520px;
+      margin-left: auto;
+      word-break: keep-all;
+    }
+    @media (max-width: 980px) {
+      .about-intro { grid-template-columns: 1fr; gap: 1.4rem; padding-top: 4.8rem; }
+      .about-intro p { margin-left: 0; }
+    }
+    @media (max-width: 640px) {
+      .about-intro { padding: 4.8rem 22px 4rem; }
+      .about-intro h2 { font-size: clamp(3.3rem, 15vw, 5.4rem); }
+      .about-intro p { font-size: 1.02rem; }
+    }
   </style>
   <link rel="stylesheet" href="niceway-common-v21.css" />
 </head>
@@ -476,11 +522,20 @@
     </div>
   </section>
 
+  <!-- ABOUT 스토리 시작: 첫 영상과 챕터 사이의 명확한 타이포그래피 구분 -->
+  <section class="about-intro" aria-labelledby="about-intro-heading">
+    <div>
+      <span class="about-intro-label">BEHIND THE BOTTLE</span>
+      <h2 id="about-intro-heading">ALMOST<br>ISN’T<br>ENOUGH.</h2>
+    </div>
+    <p>한 병의 소스가 완성되기까지, 확인해야 할 것은 생각보다 많습니다. 우리가 어떤 기준으로 맛을 고르고 끝까지 다듬는지, 그 이야기를 들려드립니다.</p>
+  </section>
+
   <!-- 스토리 본문 -->
   <main class="story-stream-container">
     <article class="story-row">
       <div class="story-media-col">
-        <video class="parallax-media lazy-about-video" muted loop playsinline preload="metadata" poster="https://images.pexels.com/videos/6602847/pexels-photo-6602847.jpeg?auto=compress&dpr=1&h=900&w=1400" data-src="https://videos.pexels.com/video-files/6602847/6602847-uhd_3840_2160_25fps.mp4"></video>
+        <video class="parallax-media lazy-about-video" muted loop playsinline preload="metadata" poster="https://images.pexels.com/videos/5794190/pexels-photo-5794190.jpeg?auto=compress&dpr=1&h=900&w=1400" data-src="https://videos.pexels.com/video-files/5794190/5794190-uhd_3840_2160_25fps.mp4"></video>
       </div>
 
       <div class="story-text-col">
